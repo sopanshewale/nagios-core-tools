@@ -1,13 +1,13 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import os
-import sys
+from os import statvfs
+from sys import exit
 from optparse import OptionParser
 
 
 def measurePartionUsage(partition):
-    p_details = os.statvfs(partition)
+    p_details = statvfs(partition)
     totalBytes = float(p_details.f_bsize * p_details.f_blocks)
     totalUsedSpace = float(p_details.f_bsize * (p_details.f_blocks
                            - p_details.f_bfree))
@@ -35,26 +35,26 @@ def handleAlert(
                 ]) + 'GB (' + str(percentage_used) + '%), free ' \
             + str(details['free']) + 'GB (' + str(percentage_free) \
             + '%)|Used Space=' + str(float(details['used']) * 1024) + 'MB;;;;' + str(float(details['total'])*1024) + ';'
-        sys.exit(2)
+        exit(2)
     if float(percentage_free) < float(warn):
         print 'WARNING: ' + partition + ':  total ' \
             + str(details['total']) + 'GB, used ' + str(details['used'
                 ]) + 'GB (' + str(percentage_used) + '%), free ' \
             + str(details['free']) + 'GB (' + str(percentage_free) \
             + '%)|Used Space=' + str(float(details['used']) * 1024) + 'MB;;;;' + str(float(details['total'])*1024) + ';'
-        sys.exit(1)
+        exit(1)
 
     print 'OK: ' + partition + ':  total ' + str(details['total']) \
         + 'GB, used ' + str(details['used']) + 'GB (' \
         + str(percentage_used) + '%), free ' + str(details['free']) \
         + 'GB (' + str(percentage_free) + '%)|Used Space=' + str(float(details['used']) * 1024) + 'MB;;;;' + str(float(details['total'])*1024) + ';'
-    sys.exit(0)
+    exit(0)
 
 
 def verifyArguments(options):
     if float(options.warning) <= float(options.critical):
         print 'UNKNOWN: You can not have critical options bigger than warnings'
-        sys.exit(3)
+        exit(3)
 
 
 def main():
@@ -93,7 +93,7 @@ def main():
         (options, args) = parser.parse_args()
     except:
         parser.print_help()
-        sys.exit(0)
+        exit(0)
     verifyArguments(options)
     details = measurePartionUsage(options.partition)
     handleAlert(options.warning, options.critical, details,
